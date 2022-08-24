@@ -1,0 +1,27 @@
+appName: k8s-resource-watcher
+
+image:
+  pullPolicy: Always
+  tag: "ghcr.io/krisztiansala/k8s-resource-watcher"
+
+service: 
+  type: ClusterIP
+  port: 8000
+
+hpa: 
+  minReplicas: 2
+  maxReplicas: 4
+  cpuUtilization: 70
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "250m"
+
+configMap:
+  name: k8s-resource-config
+  data: 
+    ENV: prod
