@@ -1,0 +1,46 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "k8s-resource-watcher"
+  labels:
+    app: "k8s-resource-watcher"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "k8s-resource-watcher"
+  template:
+    metadata:
+      labels:
+        app: "k8s-resource-watcher"
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: "k8s-resource-watcher"
+        image: "ghcr.io/krisztiansala/k8s-resource-watcher"
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: config
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 20
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
