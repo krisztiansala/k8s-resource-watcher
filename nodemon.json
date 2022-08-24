@@ -9,6 +9,6 @@
     "env": {
         "ENV": "development"
     },
-    "watch": ["."],
+    "watch": ["./.."],
     "ext": "go,json"
 }

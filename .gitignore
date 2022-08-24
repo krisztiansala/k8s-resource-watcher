@@ -13,7 +13,7 @@
 bin/
 .env
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
 *tfstate*
 .terraform/
 *.hcl

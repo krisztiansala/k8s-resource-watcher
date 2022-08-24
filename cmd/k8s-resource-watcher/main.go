@@ -11,8 +11,11 @@ import (
 	"time"
 
 	"github.com/krisztiansala/k8s-resource-watcher/internal/logging"
+	"github.com/krisztiansala/k8s-resource-watcher/internal/util"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -25,18 +28,27 @@ func init() {
 	log.SetLevel(log.InfoLevel)
 }
 
-const (
-	// listenAddress = "0.0.0.0"
-	listenAddress = "127.0.0.1"
-	port          = 8000
+var (
+	env           = util.GetenvDefault("ENV", "dev")
+	listenAddress = util.VarByEnv(env, "127.0.0.1", "0.0.0.0")
+	port          = util.GetenvIntDefault("PORT", 8000)
 )
 
 func main() {
-	kubeconfig := filepath.Join(os.Getenv("HOME"), ".kube", "config")
-	log.Printf("Using kubeconfig file: %s", kubeconfig)
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if err != nil {
-		log.Fatal(err)
+	var config *restclient.Config
+	var err error
+	if env == "dev" {
+		kubeconfig := filepath.Join(os.Getenv("HOME"), ".kube", "config")
+		log.Printf("Using kubeconfig file: %s", kubeconfig)
+		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
