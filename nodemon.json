@@ -1,0 +1,14 @@
+{
+    "restartable": "rs",
+    "ignore": [
+        ".git",
+        "bin",
+        "vendor",
+        ".vscode"
+    ],
+    "env": {
+        "ENV": "development"
+    },
+    "watch": ["."],
+    "ext": "go,json"
+}
