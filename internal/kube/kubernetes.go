@@ -1,12 +1,18 @@
-package main
+package kube
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	restclient "k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type ContainerResources struct {
@@ -19,8 +25,37 @@ type ContainerResources struct {
 	CPULimit      string `json:"cpu_limit"`
 }
 
-func GetContainerResources(clientset *kubernetes.Clientset, labelSelector string) ([]byte, error) {
-	pods, err := clientset.CoreV1().Pods("").List(context.Background(), metav1.ListOptions{
+type KubeClient struct {
+	Clientset *kubernetes.Clientset
+}
+
+func NewKubeClient(env string) *KubeClient {
+	k := new(KubeClient)
+	var config *restclient.Config
+	var err error
+	if env == "dev" {
+		kubeconfig := filepath.Join(os.Getenv("HOME"), ".kube", "config")
+		log.Printf("Using kubeconfig file: %s", kubeconfig)
+		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	k.Clientset, err = kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return k
+}
+
+func (k *KubeClient) GetContainerResources(labelSelector string) ([]byte, error) {
+	pods, err := k.Clientset.CoreV1().Pods("").List(context.Background(), metav1.ListOptions{
 		LabelSelector: labelSelector,
 	})
 	if err != nil {

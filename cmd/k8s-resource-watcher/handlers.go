@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/krisztiansala/k8s-resource-watcher/internal/kube"
 	log "github.com/sirupsen/logrus"
-	"k8s.io/client-go/kubernetes"
 )
 
 type resourceHandler struct {
-	clientset *kubernetes.Clientset
+	kubeClient *kube.KubeClient
 }
 
 func (h *resourceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	labelSelector := r.URL.Query().Get("pod-label")
-	result, err := GetContainerResources(h.clientset, labelSelector)
+	result, err := h.kubeClient.GetContainerResources(labelSelector)
 	if err != nil {
 		log.Errorln(err)
 	}
