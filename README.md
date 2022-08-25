@@ -15,7 +15,7 @@ The environment - `dev` or `prod` - can be specified using the `ENV` environment
 
 A basic version of the application can be deployed with the `kubectl` command, following the instructions from the `k8s` folder.
 
-Using the Helm chart from the `helm` directory hovewer provides more configuration options and it also creates a service account (which provides the necessary permissions for accessing pod details in the cluster) and a HPA (to scale the deployment if the load increases).
+Using the Helm chart from the `helm` directory however provides more configuration options and it also creates a service account (which provides the necessary permissions for accessing pod details in the cluster) and a HPA (to scale the deployment if the load increases).
 
 To deploy the chart, run the following command from the `helm` directory: `helm upgrade --install k8s-resource-watcher --values values.yaml .`
 
