@@ -16,6 +16,7 @@ spec:
         app: "{{ .Values.appName }}"
     spec:
       terminationGracePeriodSeconds: 30
+      serviceAccount: "sa-{{ .Values.appName }}"
       containers:
       - name: "{{ .Values.appName }}"
         image: "{{ .Values.image.tag }}"
